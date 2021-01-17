@@ -9,9 +9,10 @@ import urllib2
 import importAssets
 import browseDir
 
-os.environ['FTRACK_SERVER'] = 'https://lux-visual-effects.ftrackapp.com'
+
 os.environ['FTRACK_API_USER'] = getpass.getuser()
-os.environ['FTRACK_API_KEY'] = 'MjU3M2Y0MTAtY2M0OS00YzlhLTk3YjQtY2VjNDEwMjVhYTU1OjpiNWM4MDNhYy1lZGI2LTQ2YzEtODcyOC0xZGRiZDA5MzM2MTc'
+os.environ['FTRACK_SERVER'] = 'https://domain.ftrackapp.com'
+os.environ['FTRACK_API_KEY'] = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 
 
 def ftrack_default_knobs():
