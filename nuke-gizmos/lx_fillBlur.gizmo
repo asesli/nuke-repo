@@ -1,0 +1,186 @@
+#! X:/apps/Nuke7.0v5/Nuke7.0.exe -nx
+version 7.0 v5
+Gizmo {
+ inputs 2
+ help "Fill Tool\nDoes simple fill to help out the artists.  Like anything that is automatic, it doesn't do the best job but it should get the artists a little farther along.  \n\nTo Use:\nPlug your Matte into the Matte input and plug your Plate into the Plate Input.\nAdjust your Occlusion size and blur\nadjust you fill distance in both X and Y"
+ note_font "Bitstream Vera Sans"
+ mapsize {0.15 0.15}
+ addUserKnob {20 Fill}
+ addUserKnob {20 Occlusion l "Occlusion Adjustment" n 1}
+ addUserKnob {41 size l "Dilate Size" T Dilate1.size}
+ addUserKnob {41 size_1 l "Blur Size" T Blur1.size}
+ addUserKnob {20 endGroup n -1}
+ addUserKnob {20 FillAdjustment l "Fill Adjustment" n 1}
+ addUserKnob {7 FillX l "Fill X Distance" R 0 40}
+ addUserKnob {7 FillY l "Fill Y Distance" R 0 40}
+ addUserKnob {41 rotate l Rotate T Transform1.rotate}
+ addUserKnob {20 endGroup_1 l endGroup n -1}
+}
+ BackdropNode {
+  inputs 0
+  name BackdropNode2
+  tile_color 0x434343ff
+  label Matte_Expand
+  note_font_size 42
+  xpos -281
+  ypos 232
+  bdwidth 337
+  bdheight 262
+ }
+ BackdropNode {
+  inputs 0
+  name BackdropNode1
+  tile_color 0x434343ff
+  label "BlurFill\n"
+  note_font_size 42
+  xpos -665
+  ypos 543
+  bdwidth 724
+  bdheight 624
+ }
+ Input {
+  inputs 0
+  name Matte
+  xpos -149
+  ypos 39
+  number 1
+ }
+ Transform {
+  rotate {{parent.Transform1.rotate}}
+  center {960 540}
+  name Transform3
+  xpos -149
+  ypos 99
+ }
+ Dilate {
+  channels alpha
+  name Dilate1
+  xpos -149
+  ypos 310
+ }
+ Blur {
+  size {{parent.size_1-1 i}}
+  name Blur4
+  xpos -149
+  ypos 447
+ }
+set N2ca3f560 [stack 0]
+ Erode {
+  channels alpha
+  name Erode1
+  xpos -149
+  ypos 641
+ }
+ Blur {
+  name Blur1
+  xpos -149
+  ypos 712
+ }
+set N2ca3fc40 [stack 0]
+ Dot {
+  name Dot2
+  xpos -115
+  ypos 1096
+ }
+push $N2ca3fc40
+push $N2ca3f560
+ Input {
+  inputs 0
+  name Plate
+  xpos -397
+  ypos 35
+ }
+ Transform {
+  center {960 540}
+  name Transform1
+  xpos -397
+  ypos 98
+ }
+ Merge2 {
+  inputs 2
+  operation stencil
+  name Stencil
+  xpos -397
+  ypos 453
+ }
+ EdgeBlur {
+  inputs 1+1
+  size {{parent.FillX i} {parent.FillY i}}
+  edge_mult 10
+  name EdgeBlur1
+  xpos -397
+  ypos 712
+ }
+set N2cb903a0 [stack 0]
+ Clamp {
+  channels alpha
+  maximum 0
+  MinClampTo 1
+  MinClampTo_enable true
+  MaxClampTo_enable true
+  name Clamp1
+  xpos -569
+  ypos 712
+ }
+ Invert {
+  channels alpha
+  name Invert2
+  xpos -569
+  ypos 968
+ }
+ Merge2 {
+  inputs 2
+  operation minus
+  name Merge4
+  xpos -569
+  ypos 1093
+ }
+ Dot {
+  name Dot1
+  xpos -535
+  ypos 1217
+ }
+push $N2cb903a0
+ Unpremult {
+  name Unpremult1
+  xpos -397
+  ypos 878
+ }
+ Shuffle {
+  alpha white
+  name Shuffle2
+  xpos -397
+  ypos 921
+ }
+ Merge2 {
+  inputs 2
+  operation mask
+  name Mask
+  xpos -397
+  ypos 1214
+ }
+set N2cb91bb0 [stack 0]
+ Transform {
+  rotate {{parent.Transform1.rotate}}
+  center {960 540}
+  invert_matrix true
+  name Transform2
+  xpos -397
+  ypos 1295
+ }
+ Output {
+  name Output1
+  xpos -397
+  ypos 1381
+ }
+push $N2cb91bb0
+push 0
+ Viewer {
+  inputs 2
+  input_number 1
+  input_process false
+  name Viewer1
+  xpos -887
+  ypos 960
+ }
+end_group
