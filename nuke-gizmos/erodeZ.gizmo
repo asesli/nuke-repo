@@ -1,0 +1,97 @@
+#! X:/apps/Nuke8.0v5/nuke-8.0.v5.dll -nx
+version 8.0 v5
+Gizmo {
+ inputs 2
+ tile_color 0xff45ff
+ addUserKnob {20 blurZ l BlurZ}
+ addUserKnob {41 size T ZBlur3.size}
+ addUserKnob {41 white T NoOp1.white}
+}
+ Input {
+  inputs 0
+  name matte
+  xpos -295
+  ypos 151
+  number 1
+ }
+ Input {
+  inputs 0
+  name Input1
+  xpos -493
+  ypos 39
+ }
+set N22244660 [stack 0]
+ Copy {
+  inputs 2
+  from0 rgba.alpha
+  to0 depth.Z
+  name Copy1
+  xpos -493
+  ypos 145
+ }
+ ZBlur {
+  math linear
+  size 10
+  max_size {{size}}
+  name ZBlur3
+  xpos -494
+  ypos 219
+ }
+ Remove {
+  channels depth
+  name Remove1
+  xpos -494
+  ypos 263
+ }
+ Grade {
+  channels rgba
+  blackpoint {{(whitepoint.right)-(whitepoint.right/parent.NoOp1.threshold.left)}}
+  whitepoint {{parent.NoOp1.white.left}}
+  white_clamp true
+  name Grade2
+  xpos -494
+  ypos 321
+ }
+set N22245420 [stack 0]
+push $N22244660
+ Dot {
+  name Dot1
+  selected true
+  xpos -523
+  ypos 350
+ }
+ Merge2 {
+  inputs 2
+  operation copy
+  name Merge1
+  xpos -511
+  ypos 382
+ }
+ Output {
+  name Output1
+  xpos -494
+  ypos 420
+ }
+push $N22245420
+push 0
+ Viewer {
+  inputs 2
+  input_number 1
+  input_process false
+  name Viewer1
+  xpos -370
+  ypos -10
+ }
+ NoOp {
+  inputs 0
+  name NoOp1
+  xpos -625
+  ypos 322
+  addUserKnob {20 User}
+  addUserKnob {7 white}
+  white 1
+  addUserKnob {7 black l INVISIBLE +INVISIBLE}
+  addUserKnob {7 threshold R 1 100}
+  threshold 100
+ }
+end_group

@@ -1,0 +1,54 @@
+set cut_paste_input [stack 0]
+version 9.0 v7
+push $cut_paste_input
+Group {
+ name N_Distant
+ tile_color 0xbbaa3aff
+ addUserKnob {20 m_distant l M_Distant}
+ addUserKnob {41 in l Channels T input_channel.in}
+ addUserKnob {41 round l Round T Controls.round}
+ addUserKnob {41 about l About T Controls.about}
+}
+ NoOp {
+  inputs 0
+  name Controls
+  xpos -40
+  ypos -226
+  addUserKnob {20 User}
+  addUserKnob {7 round R -180 180}
+  addUserKnob {7 about R -180 180}
+  addUserKnob {7 lx}
+  lx {{rad*cos(radians(round)) x1 0}}
+  addUserKnob {7 ly}
+  ly {{sin(radians(about))}}
+  addUserKnob {7 lz}
+  lz {{rad*sin(radians(round))}}
+  addUserKnob {7 rad}
+  rad {{cos(radians(about))}}
+  addUserKnob {18 norm}
+  norm {{lx/sqrt(pow2(lx)+pow2(ly)+pow2(lz))} {ly/sqrt(pow2(lx)+pow2(ly)+pow2(lz))} {lz/sqrt(pow2(lx)+pow2(ly)+pow2(lz))}}
+  addUserKnob {6 norm_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+ }
+ Input {
+  inputs 0
+  name Normal
+  xpos -150
+  ypos -322
+ }
+ Shuffle {
+  name input_channel
+  xpos -150
+  ypos -274
+ }
+ Expression {
+  expr3 max((r*Controls.norm.r)+(g*Controls.norm.g)+(b*Controls.norm.b),0)
+  name Expression4
+  xpos -150
+  ypos -226
+ }
+ Output {
+  name Output1
+  xpos -150
+  ypos -178
+ }
+end_group

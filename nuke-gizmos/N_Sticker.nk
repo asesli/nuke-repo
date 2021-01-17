@@ -1,0 +1,351 @@
+set cut_paste_input [stack 0]
+version 9.0 v7
+push $cut_paste_input
+Group {
+ name N_Sticker
+ tile_color 0xbcab3bff
+ addUserKnob {20 m_Sticker l M_Sticker}
+ addUserKnob {41 in l Channel T Shuffle_Input_Channels.in}
+ addUserKnob {41 format l Format T Reformat1.format}
+ addUserKnob {4 matte l Matte M {Source Alpha}}
+ matte Alpha
+ addUserKnob {6 premult l "Premult result" -STARTLINE}
+ premult true
+ addUserKnob {26 ""}
+ addUserKnob {12 center l Center}
+ addUserKnob {22 sample l "Stick It!" T "import nuke\n\ndef nStickerInit(myNode):\n\n    oNSticker = nuke.toNode(myNode)\n    \n\n    myX = oNSticker\['center'].value(0) + 0.5\n\n    myY = oNSticker\['center'].value(1) + 0.5\n\n\n    with oNSticker:\n\n        oNormal = nuke.toNode(\"NORMALS\")\n\n        oPosition = nuke.toNode(\"POSITION\")\n\n        oTarget = nuke.thisNode()\n\n\n    posR = oPosition.sample('r', myX,myY)\n\n    posG = oPosition.sample('g', myX,myY)\n\n    posB = oPosition.sample('b', myX,myY)\n\n\n    normR = oNormal.sample('r', myX,myY)\n    normG = oNormal.sample('g', myX,myY)\n    normB = oNormal.sample('b', myX,myY)\n\n\n    vZ = nuke.math.Vector3()\n\n    vZ.set(normR, normG, normB)\n\n    vZ.normalize()\n\n\n    vUp = nuke.math.Vector3(0,1,0)\n\n\n    vX = nuke.math.Vector3()\n\n    vX = vZ.cross( vUp )\n\n    vX.normalize()\n\n\n\n    vY = nuke.math.Vector3()\n\n    vY = vX.cross( vZ )\n\n\n    stickyMatrix = \[vX\[0], vY\[0], vZ\[0], posR, vX\[1], vY\[1], vZ\[1], posG, vX\[2], vY\[2], vZ\[2], posB, 0, 0, 0, 1]\n\n\n\n    for i in range(16):\n\n        oTarget\['matrix'].setValue(stickyMatrix\[i],i)\n\n\n    oTarget\['useMatrix'].setValue(True)\n\n\nnStickerInit(nuke.thisNode().name())" +STARTLINE}
+ addUserKnob {26 transform l "" +STARTLINE}
+ addUserKnob {13 translate l Translate}
+ addUserKnob {13 rotate l Rotate}
+ addUserKnob {13 scale l Scale}
+ scale {1 1 1}
+ addUserKnob {14 uscale l "Uniform scale" R 0 100}
+ uscale 10
+ addUserKnob {26 crop l "" +STARTLINE}
+ addUserKnob {7 near l "Near crop" R -10000 10000}
+ near -10000
+ addUserKnob {7 far l "Far crop" R -10000 10000}
+ far 10000
+ addUserKnob {41 matrix l INVISIBLE +INVISIBLE T Axis.matrix}
+ addUserKnob {41 useMatrix l INVISIBLE +INVISIBLE T Axis.useMatrix}
+}
+ BackdropNode {
+  inputs 0
+  name BackdropNode1
+  tile_color 0x7171c600
+  label Projection
+  note_font_size 42
+  xpos -448
+  ypos -85
+  bdwidth 303
+  bdheight 509
+ }
+ BackdropNode {
+  inputs 0
+  name BackdropNode2
+  tile_color 0x7171c600
+  label "Normals from position"
+  note_font_size 42
+  xpos 308
+  ypos -113
+  bdwidth 484
+  bdheight 566
+ }
+ BackdropNode {
+  inputs 0
+  name BackdropNode3
+  tile_color 0x7171c600
+  label "out to the sampler function"
+  note_font_size 25
+  xpos 309
+  ypos 554
+  bdwidth 481
+  bdheight 171
+ }
+ Input {
+  inputs 0
+  name Alpha
+  xpos -11
+  ypos -350
+  number 2
+ }
+ Dot {
+  name Dot8
+  xpos 23
+  ypos -238
+ }
+set N60dda400 [stack 0]
+ Input {
+  inputs 0
+  name Position
+  xpos 147
+  ypos -352
+ }
+ Shuffle {
+  name Shuffle_Input_Channels
+  xpos 147
+  ypos -284
+ }
+ ShuffleCopy {
+  inputs 2
+  name Shuffle_Input_Alpha
+  xpos 147
+  ypos -242
+  disable {{!parent.matte}}
+ }
+ Unpremult {
+  name Unpremult1
+  xpos 147
+  ypos -195
+ }
+ Dot {
+  name Dot2
+  xpos 181
+  ypos 14
+ }
+set N60df9000 [stack 0]
+ Dot {
+  name Dot11
+  xpos 444
+  ypos 14
+ }
+set N60df8c00 [stack 0]
+ Dot {
+  name Dot12
+  xpos 444
+  ypos 214
+ }
+set N60df8800 [stack 0]
+push $N60df8c00
+ Dot {
+  name Dot10
+  xpos 544
+  ypos 14
+ }
+set N60df8400 [stack 0]
+ Transform {
+  translate {-1 0}
+  center {1024 778}
+  name Pixel_at_Right
+  selected true
+  xpos 510
+  ypos 160
+ }
+ MergeExpression {
+  inputs 2
+  temp_name0 x
+  temp_expr0 Br-Ar
+  temp_name1 y
+  temp_expr1 Bg-Ag
+  temp_name2 z
+  temp_expr2 Bb-Ab
+  temp_name3 Len
+  temp_expr3 "sqrt((x*x) + (y*y) + (z*z))"
+  expr0 x/Len
+  expr1 y/Len
+  expr2 z/Len
+  name Base_Vector_X
+  xpos 510
+  ypos 260
+ }
+push $N60df8800
+ Dot {
+  name Dot13
+  xpos 594
+  ypos 214
+ }
+push $N60df8400
+ Dot {
+  name Dot9
+  xpos 694
+  ypos 14
+ }
+ Transform {
+  translate {0 -1}
+  center {1024 778}
+  name Pixel_Above
+  xpos 660
+  ypos 162
+ }
+ MergeExpression {
+  inputs 2
+  temp_name0 x
+  temp_expr0 Br-Ar
+  temp_name1 y
+  temp_expr1 Bg-Ag
+  temp_name2 z
+  temp_expr2 Bb-Ab
+  temp_name3 len
+  temp_expr3 "sqrt((x*x) + (y*y) + (z*z))"
+  expr0 x/Len
+  expr1 y/Len
+  expr2 z/len
+  name Base_Vector_Y
+  xpos 660
+  ypos 260
+ }
+ MergeExpression {
+  inputs 2
+  temp_name0 z
+  temp_expr0 "Ar*Bg - Ag*Br"
+  expr0 x
+  expr1 y
+  expr2 z
+  name Normals_Solver
+  label Cross_X_Y
+  xpos 660
+  ypos 304
+ }
+ Expression {
+  expr0 isnan(r)?0:r
+  expr1 isnan(g)?0:r
+  expr2 isnan(b)?0:r
+  name Fix_NANs
+  xpos 660
+  ypos 410
+ }
+ NoOp {
+  name NORMALS
+  xpos 660
+  ypos 660
+ }
+push $N60df8800
+ NoOp {
+  name POSITION
+  xpos 410
+  ypos 660
+ }
+push $N60dda400
+ Dot {
+  name Dot4
+  xpos 23
+  ypos 716
+ }
+push $N60df9000
+ Dot {
+  name Dot1
+  xpos -303
+  ypos 14
+ }
+ Expression {
+  temp_name0 dx
+  temp_expr0 "(r - Axis1.world_matrix.3)"
+  temp_name1 dy
+  temp_expr1 "(g - Axis1.world_matrix.7)"
+  temp_name2 dy
+  temp_expr2 "(b - Axis1.world_matrix.11)"
+  expr0 "r != 0? dx : 0"
+  expr1 "g != 0? dy : 0"
+  expr2 "b != 0? dz : 0"
+  name Camera_Transform_Distance
+  xpos -337
+  ypos 110
+ }
+ Expression {
+  temp_name0 x
+  temp_expr0 "Axis1.world_matrix.0 * r + Axis1.world_matrix.4 * g + Axis1.world_matrix.8 * b"
+  temp_name1 y
+  temp_expr1 "Axis1.world_matrix.1 * r + Axis1.world_matrix.5 * g + Axis1.world_matrix.9 * b"
+  temp_name2 z
+  temp_expr2 "Axis1.world_matrix.2 * r + Axis1.world_matrix.6 * g + Axis1.world_matrix.10 * b"
+  expr0 x
+  expr1 y
+  expr2 z
+  name Camera_Transform_Rotation
+  xpos -337
+  ypos 160
+ }
+ Expression {
+  temp_name0 myNear
+  temp_expr0 "-far - Axis1.translate.z"
+  temp_name1 myFar
+  temp_expr1 "-near - Axis1.translate.z"
+  expr0 "b<myNear || b > myFar ? 0 : r"
+  expr1 "b<myNear || b > myFar ? 0 : g"
+  name Clipping_Planes
+  xpos -337
+  ypos 210
+ }
+ Expression {
+  temp_name0 clamp
+  temp_expr0 "r == 0 && g == 0 ? 0 :1"
+  temp_name1 myRatio
+  temp_expr1 Reformat1.format.r/Reformat1.format.t
+  temp_name2 u
+  temp_expr2 "clamp ==1? r/(parent.scale.x*uscale* myRatio)+0.5 : 0"
+  temp_name3 v
+  temp_expr3 "clamp == 1? g/(parent.sacle.y*uscale ) +0.5 : 0"
+  expr0 "u>0 && u<1 && v>0 && v<1? 1 - u : 0"
+  expr1 "v>0 && v<1 && u>0 && u<1? v : 0"
+  channel3 none
+  name Orthographic_Solver
+  xpos -337
+  ypos 260
+ }
+ Dot {
+  name Dot3
+  xpos -303
+  ypos 464
+ }
+ Input {
+  inputs 0
+  name Texture
+  xpos -690
+  ypos -350
+  number 1
+ }
+ Crop {
+  box {1 1 2047 1555}
+  name Crop
+  xpos -690
+  ypos 410
+ }
+ STMap {
+  inputs 2
+  channels rgba
+  uv rgb
+  name STMap1
+  xpos -690
+  ypos 460
+ }
+ Multiply {
+  inputs 1+1
+  value 0
+  invert_mask true
+  name Multiply1
+  xpos -690
+  ypos 706
+  disable {{parent.premult}}
+ }
+ Output {
+  name Output1
+  xpos -690
+  ypos 942
+ }
+ Axis2 {
+  inputs 0
+  rotate {0 -1.998000026 95.57099915}
+  useMatrix true
+  name Axis
+  xpos -1227
+  ypos 40
+ }
+ Axis2 {
+  rotate {{parent.rotate.y} {parent.rotate.x} {parent.rotate.z}}
+  name Pivot
+  xpos -1227
+  ypos 140
+ }
+ Axis2 {
+  translate {{parent.translate.x} {parent.translate.y} 10000}
+  name Axis1
+  xpos -1227
+  ypos 240
+ }
+ Reformat {
+  inputs 0
+  name Reformat1
+  xpos -128
+  ypos 260
+ }
+end_group

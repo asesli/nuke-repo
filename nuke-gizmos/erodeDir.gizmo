@@ -1,0 +1,103 @@
+#! X:/apps/Nuke8.0v5/nuke-8.0.v5.dll -nx
+version 8.0 v5
+Gizmo {
+ help "Directional erode\n\n<i>Created By: Alican Sesli</i>"
+ tile_color 0xff45ff
+ addUserKnob {20 User}
+ addUserKnob {7 erode l Erode t "Erode amount" R 0 50}
+ addUserKnob {41 translate l INVISIBLE +INVISIBLE T Transform.translate}
+ addUserKnob {41 rotate l Rotate t Direction T Transform_Rotate.rotate}
+}
+ Viewer {
+  inputs 0
+  input_process false
+  name Viewer1
+  xpos -260
+  ypos -10
+ }
+ Input {
+  inputs 0
+  name Input
+  xpos -624
+  ypos 81
+ }
+ Dot {
+  name Dot6
+  xpos -590
+  ypos 192
+ }
+set N3a89e620 [stack 0]
+ Transform {
+  center {1024 540}
+  name Transform_Rotate
+  xpos -742
+  ypos 253
+ }
+ Dot {
+  name Dot5
+  xpos -708
+  ypos 300
+ }
+set N228f8700 [stack 0]
+push $N228f8700
+ Transform {
+  translate {{parent.erode} {curve}}
+  center {1024 778}
+  name Transform
+  xpos -830
+  ypos 325
+ }
+push $N228f8700
+ Merge2 {
+  inputs 2
+  operation difference
+  name Merge7
+  xpos -788
+  ypos 418
+ }
+ Merge2 {
+  inputs 2
+  operation from
+  name Merge8
+  xpos -742
+  ypos 471
+ }
+ Clamp {
+  name Clamp2
+  xpos -742
+  ypos 509
+ }
+ Dilate {
+  size {{abs(parent.Transform.translate.x)} {abs(parent.Transform.translate.y)}}
+  name Dilate4
+  xpos -829
+  ypos 565
+ }
+ Grade {
+  channels rgba
+  white 2.6
+  name Grade1
+  xpos -822
+  ypos 626
+ }
+ Transform {
+  rotate {{-parent.Transform_Rotate.rotate}}
+  center {1024 540}
+  name Transform_UnRotate
+  xpos -742
+  ypos 677
+ }
+push $N3a89e620
+ Merge2 {
+  inputs 2
+  operation plus
+  name Merge11
+  xpos -624
+  ypos 774
+ }
+ Output {
+  name Output1
+  xpos -624
+  ypos 873
+ }
+end_group

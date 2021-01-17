@@ -1,0 +1,126 @@
+set cut_paste_input [stack 0]
+version 9.0 v7
+push $cut_paste_input
+Group {
+ name N_Noise3D
+ tile_color 0xbcab3bff
+ addUserKnob {20 m_noise3d l M_Noise3D}
+ addUserKnob {41 in l Channel T Shuffle_Input_Channels.in}
+ addUserKnob {4 matte l Matte M {Source Alpha}}
+ matte Alpha
+ addUserKnob {6 premult l "Premultiply result" -STARTLINE}
+ premult true
+ addUserKnob {26 ""}
+ addUserKnob {4 noisetype l Type M {fBm Turbulent Random CheckerBoard "" "" ""}}
+ addUserKnob {13 size l Scale}
+ size {1 1 1}
+ addUserKnob {13 offset l Offset}
+ addUserKnob {7 uniform_scale l "Uniform Scale" R 0 100}
+ uniform_scale 1
+ addUserKnob {26 ""}
+ addUserKnob {3 octaves l Octaves}
+ octaves 10
+ addUserKnob {7 lacunarity l Lacunarity R 0 5}
+ lacunarity 2
+ addUserKnob {7 gain l Gain}
+ gain 0.5
+}
+ Input {
+  inputs 0
+  name Alpha
+  xpos 231
+  ypos -357
+  number 1
+ }
+ Dot {
+  name Dot8
+  xpos 265
+  ypos -258
+ }
+ Input {
+  inputs 0
+  name Position
+  xpos 389
+  ypos -359
+ }
+ Shuffle {
+  name Shuffle_Input_Channels
+  xpos 389
+  ypos -304
+ }
+ ShuffleCopy {
+  inputs 2
+  name Shuffle_Input_Alpha
+  xpos 389
+  ypos -262
+  disable {{!parent.matte}}
+ }
+ Unpremult {
+  name Unpremult1
+  xpos 389
+  ypos -215
+ }
+set N39794000 [stack 0]
+ Expression {
+  temp_name0 lr
+  temp_expr0 "abs(fmod(r, size.x*uniform_scale)) > 0.5 ? 1 : 0"
+  temp_name1 lg
+  temp_expr1 "abs(fmod(g, size.y*uniform_scale)) > 0.5 ? 1 : 0"
+  temp_name2 lb
+  temp_expr2 "abs(fmod(b, size.z*uniform_scale)) > 0.5 ? 1 : 0"
+  temp_name3 checker
+  temp_expr3 "lr ^^ lg ^^ lb"
+  channel0 rgb
+  expr0 checker
+  channel1 none
+  channel2 none
+  channel3 none
+  name checker
+  xpos 448
+  ypos -153
+  addUserKnob {20 User}
+  addUserKnob {13 CheckerSize +DISABLED}
+  CheckerSize {1 1 1}
+ }
+push $N39794000
+ Expression {
+  temp_name0 fBmNoise
+  temp_expr0 fBm((r+offset.x)*1/size.x/uniform_scale,(g+offset.y)*1/size.y/uniform_scale,(b+offset.z)*1/size.z/uniform_scale,octaves,lacunarity,gain)*.5+0.5
+  temp_name1 turbNoise
+  temp_expr1 turbulence((r+offset.x)*1/size.x/uniform_scale,(g+offset.y)*1/size.y/uniform_scale,(b+offset.z)*1/size.z/uniform_scale,octaves,lacunarity,gain)
+  temp_name2 random
+  temp_expr2 random((r+offset.x)*1/size.x/uniform_scale,(g+offset.y)*1/size.y/uniform_scale,(b+offset.z)*1/size.z/uniform_scale)
+  channel0 rgb
+  expr0 "noisetype==0 ? fBmNoise : noisetype==1 ? turbNoise : noisetype==2 ? random : 0"
+  channel1 none
+  channel2 none
+  channel3 none
+  name noise
+  xpos 333
+  ypos -154
+  cached true
+ }
+ Switch {
+  inputs 2
+  which {{"parent.noisetype == 3"}}
+  name Switch1
+  xpos 389
+  ypos -95
+ }
+ Grade {
+  name Grade1
+  xpos 389
+  ypos -55
+ }
+ Premult {
+  name Premult1
+  xpos 389
+  ypos -12
+  disable {{!parent.premult}}
+ }
+ Output {
+  name Output1
+  xpos 389
+  ypos 33
+ }
+end_group

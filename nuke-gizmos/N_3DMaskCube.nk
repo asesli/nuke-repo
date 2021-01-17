@@ -1,0 +1,279 @@
+set cut_paste_input [stack 0]
+version 9.0 v7
+push $cut_paste_input
+Group {
+ name N_3DMaskCube
+ tile_color 0xbcab3bff
+ addUserKnob {20 m_3dmaskCube l M_3DMaskCube}
+ addUserKnob {41 in l Channel T Shuffle_Input_Channels.in}
+ addUserKnob {4 matte l Matte M {Source Alpha "" ""}}
+ matte Alpha
+ addUserKnob {6 unpremultiply l Unpremult -STARTLINE}
+ unpremultiply true
+ addUserKnob {26 ""}
+ addUserKnob {18 center l Center}
+ center {0 0 0}
+ addUserKnob {6 center_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+ addUserKnob {13 offset l Translate}
+ addUserKnob {13 rotate l Rotate}
+ addUserKnob {13 scale l Scale}
+ scale {1 1 1}
+ addUserKnob {7 radius l "Outer scale" R 0.01 100}
+ radius 10
+ addUserKnob {7 inner_radius l "Inner scale" R 0 100}
+ addUserKnob {4 falloff l Falloff M {Linear Smoothstep Cubic "Inverse Cubic"}}
+ addUserKnob {6 visual l "Visualize in 3D" +STARTLINE}
+}
+ Input {
+  inputs 0
+  name Alpha
+  xpos -627
+  ypos -796
+  number 1
+ }
+ Dot {
+  name Dot8
+  xpos -593
+  ypos -680
+ }
+ Input {
+  inputs 0
+  name Position
+  xpos -469
+  ypos -794
+ }
+ Shuffle {
+  name Shuffle_Input_Channels
+  xpos -469
+  ypos -726
+ }
+ ShuffleCopy {
+  inputs 2
+  name Shuffle_Input_Alpha
+  xpos -469
+  ypos -684
+  disable {{!parent.matte}}
+ }
+ Unpremult {
+  name Unpremult1
+  xpos -469
+  ypos -637
+  disable {{!parent.unpremultiply}}
+ }
+set N399c9800 [stack 0]
+ Expression {
+  temp_name0 x
+  temp_expr0 abs(normX.x*(parent.center.r+parent.offset.x-r)+normX.y*(parent.center.g+parent.offset.y-g)+normX.z*(parent.center.b+parent.offset.z-b))
+  temp_name1 y
+  temp_expr1 abs(normY.x*(parent.center.r+parent.offset.x-r)+normY.y*(parent.center.g+parent.offset.y-g)+normY.z*(parent.center.b+parent.offset.z-b))
+  temp_name2 z
+  temp_expr2 abs(normZ.x*(parent.center.r+parent.offset.x-r)+normZ.y*(parent.center.g+parent.offset.y-g)+normZ.z*(parent.center.b+parent.offset.z-b))
+  channel0 none
+  channel1 none
+  channel2 none
+  channel3 {-rgba.red -rgba.green -rgba.blue rgba.alpha}
+  expr3 1-max(x/parent.scale.x/parent.radius*2,y/parent.scale.y/parent.radius*2,z/parent.scale.z/parent.radius*2)/2
+  name Depth_Bubble
+  xpos -469
+  ypos -511
+  addUserKnob {20 rotatiton l Rotation}
+  addUserKnob {13 rad}
+  rad {{radians(parent.rotate.x)} {radians(parent.rotate.y)} {radians(parent.rotate.z)}}
+  addUserKnob {13 normX}
+  normX {{cos(rad.z)*(cos(rad.y))} {sin(rad.z)*(cos(rad.y))} {-sin(rad.y)}}
+  addUserKnob {13 normY}
+  normY {{cos(rad.z)*(sin(rad.y)*(-sin(rad.x)))-sin(rad.z)*(cos(rad.x))} {sin(rad.z)*(sin(rad.y)*(-sin(rad.x)))+cos(rad.z)*(cos(rad.x))} {(cos(rad.y)*(-sin(rad.x)))}}
+  addUserKnob {13 normZ}
+  normZ {{cos(rad.z)*(sin(rad.y)*cos(rad.x))-sin(rad.z)*sin(rad.x)} {sin(rad.z)*(sin(rad.y)*cos(rad.x))+cos(rad.z)*sin(rad.x)} {cos(rad.y)*cos(rad.x)}}
+ }
+ Grade {
+  channels alpha
+  whitepoint {{"1-(min(parent.inner_radius, parent.radius)*(1/parent.radius))"}}
+  white_clamp true
+  name Inner_Radius
+  xpos -469
+  ypos -450
+ }
+ Dot {
+  name Dot12
+  xpos -435
+  ypos -316
+ }
+set N399c8800 [stack 0]
+ Expression {
+  expr3 "a+(a-pow(a, 2))"
+  name Inv_Cubic
+  xpos -287
+  ypos -261
+ }
+push $N399c8800
+ Expression {
+  expr3 "pow(a, 2)"
+  name Cubic
+  xpos -410
+  ypos -261
+ }
+push $N399c8800
+ Expression {
+  expr3 "smoothstep(0, 1, a)"
+  name Smoothstep
+  xpos -538
+  ypos -261
+ }
+push $N399c8800
+ NoOp {
+  name Linear
+  xpos -667
+  ypos -258
+ }
+ Switch {
+  inputs 4
+  which {{parent.falloff}}
+  name Switch2
+  xpos -469
+  ypos -196
+ }
+ Dot {
+  name Dot2
+  xpos -435
+  ypos -45
+ }
+set N399fc400 [stack 0]
+ Dot {
+  name Dot6
+  xpos -553
+  ypos -45
+ }
+ Dot {
+  name Dot5
+  xpos -553
+  ypos 109
+ }
+push $N399fc400
+ Grid {
+  inputs 0
+  number 8
+  size 16
+  color {1 0 0 1}
+  name Grid1
+  xpos 164
+  ypos -797
+  disable {{!parent.visual}}
+ }
+ Cube {
+  selectable false
+  cube {-1 -1 -1 1 1 1}
+  translate {{parent.center.r+parent.offset.x} {parent.center.g+parent.offset.y} {parent.center.b+parent.offset.z}}
+  rotate {{parent.rotate.x} {parent.rotate.y} {parent.rotate.z}}
+  scaling {{parent.scale.x} {parent.scale.y} {parent.scale.z}}
+  uniform_scale {{parent.radius}}
+  name Cube1
+  xpos 164
+  ypos -721
+  disable {{!parent.visual}}
+ }
+ Grid {
+  inputs 0
+  number 8
+  size 16
+  color {0 1 0 1}
+  name Grid2
+  xpos 259
+  ypos -798
+  disable {{!parent.visual}}
+ }
+ Cube {
+  selectable false
+  cube {-1 -1 -1 1 1 1}
+  translate {{parent.center.r+parent.offset.x} {parent.center.g+parent.offset.y} {parent.center.b+parent.offset.z}}
+  rotate {{parent.rotate.x} {parent.rotate.y} {parent.rotate.z}}
+  scaling {{parent.scale.x} {parent.scale.y} {parent.scale.z}}
+  uniform_scale {{"parent.radius > parent.inner_radius ? parent.inner_radius:parent.radius"}}
+  name Cube2
+  xpos 259
+  ypos -720
+  disable {{!parent.visual}}
+ }
+set N39a20c00 [stack 0]
+push $N399c9800
+ Dot {
+  name Dot1
+  xpos -82
+  ypos -633
+ }
+set N39a20800 [stack 0]
+ Shuffle {
+  red white
+  green white
+  blue white
+  alpha white
+  name Shufflel
+  xpos 28
+  ypos -497
+  disable {{!parent.visual}}
+ }
+set N39a20400 [stack 0]
+push $N39a20800
+ PositionToPoints {
+  inputs 2
+  display textured
+  selectable false
+  render_mode textured
+  cast_shadow false
+  receive_shadow false
+  detail 0.006
+  pointSize 4
+  name PositionToPoints1
+  xpos 28
+  ypos -637
+  disable {{!parent.visuall}}
+ }
+push $N39a20c00
+ Scene {
+  inputs 4
+  name Scene1
+  xpos 220
+  ypos -657
+  disable {{!parent.visual}}
+ }
+push $N39a20400
+ ScanlineRender {
+  inputs 2
+  transparency false
+  ztest_enabled false
+  filter Impulse
+  max_tessellation 1
+  motion_vectors_type off
+  MB_channel none
+  name ScanlineRender1
+  xpos 210
+  ypos -497
+  disable true
+ }
+ Dot {
+  name Dot7
+  xpos 244
+  ypos 39
+ }
+ ShuffleCopy {
+  inputs 2
+  in2 none
+  red red
+  green green
+  blue blue
+  name ShuffleCopy1
+  xpos -469
+  ypos 35
+ }
+ CopyBBox {
+  inputs 2
+  name CopyBBox1
+  xpos -469
+  ypos 105
+ }
+ Output {
+  name Output1
+  xpos -469
+  ypos 286
+ }
+end_group

@@ -1,0 +1,427 @@
+#! C:/_NATE/Nuke6.3v3/Nuke6.3.exe -nx
+version 6.3 v3
+Gizmo {
+ note_font Verdana
+ mapsize {0.15 0.15}
+ addUserKnob {20 User l No_Defocus_v001}
+ addUserKnob {26 info l Diretions T "Better than standard Defocus.\nTip: Animate Highlight Intensity during rack\n defocus to keep from blowing out highlights."}
+ addUserKnob {20 Controls}
+ addUserKnob {6 viewLens l "View Lens Shape" +STARTLINE}
+ addUserKnob {7 defAmt l Size R 0 100}
+ defAmt 92.5
+ addUserKnob {3 iris l "Iris Blades"}
+ iris 6
+ addUserKnob {7 rot l "Shape Rotation" R 0 90}
+ addUserKnob {7 hardness l "Shape Hardness"}
+ hardness 0.935
+ addUserKnob {7 edge l "Straight Edge" R 0 2}
+ edge 1
+ addUserKnob {7 cornerSharp l "Corner Sharpness" R 0 2}
+ cornerSharp 0.9
+ addUserKnob {6 texture l Texture +STARTLINE}
+ texture true
+ addUserKnob {7 texInt l "Texture Intensity"}
+ texInt 0.3
+ addUserKnob {6 highlights l "Boost Highlights" +STARTLINE}
+ highlights true
+ addUserKnob {7 hiThresh l "Highlight Clip"}
+ hiThresh 0.5
+ addUserKnob {7 highInt l "Highlight Intensity" R 0 4}
+ highInt 0.5
+ addUserKnob {7 chromShift l "Chromatic Shift" R -1 1}
+}
+ Input {
+  inputs 0
+  name Input1
+  xpos -556
+  ypos -708
+ }
+ Dot {
+  name Dot6
+  xpos -528
+  ypos -394
+ }
+set N7f0ab50 [stack 0]
+ Dot {
+  name Dot7
+  xpos -951
+  ypos -394
+ }
+ Shuffle {
+  red black
+  green black
+  blue black
+  alpha black
+  name Shuffle12
+  label "\[value in]"
+  xpos -979
+  ypos -319
+ }
+ Flare {
+  position {{format.w/2} {format.h/2}}
+  radius {0 {hardness*100} 100}
+  size_mult {{flSize/100}}
+  inner_falloff 0
+  corners {{iris}}
+  flattening {{edge}}
+  sharpness {{cornerSharp}}
+  corners_angle {{rot}}
+  name Flare1
+  xpos -979
+  ypos -257
+  addUserKnob {20 User}
+  addUserKnob {7 flSize}
+  flSize {{defAmt<.01?.01:defAmt}}
+ }
+set N7f0b4e0 [stack 0]
+ Noise {
+  replace true
+  type turbulence
+  size 5
+  nyquist false
+  lacunarity 5.95
+  gain 0.69
+  gamma 0.24
+  translate {-579 89}
+  scale 1.7
+  center {1024 778}
+  name Noise1
+  xpos -1148
+  ypos -257
+ }
+ Grade {
+  channels rgba
+  white 4
+  maskChannelInput -rgba.alpha
+  unpremult -rgba.alpha
+  name Grade2
+  xpos -1148
+  ypos -209
+ }
+ Blur {
+  channels rgba
+  size 2.3
+  name Blur3
+  xpos -1148
+  ypos -183
+ }
+ Shuffle {
+  red alpha
+  green alpha
+  blue alpha
+  alpha red
+  name Shuffle13
+  label "all alpha\n"
+  xpos -1148
+  ypos -126
+ }
+push $N7f0b4e0
+ Merge2 {
+  inputs 2
+  operation multiply
+  Achannels rgb
+  Bchannels rgb
+  output rgb
+  mix {{texInt i}}
+  name Merge4
+  label "\[expr \[value mix] * 100]%"
+  xpos -979
+  ypos -126
+  disable {{1-texture i}}
+ }
+ Dot {
+  name Dot2
+  xpos -951
+  ypos -32
+ }
+set N7f4d7b0 [stack 0]
+ Shuffle {
+  red black
+  green black
+  alpha black
+  name Shuffle11
+  label blue
+  xpos -883
+  ypos 12
+ }
+ Transform {
+  translate {{-chromShift*(defAmt+1) i x170 -8.19} 0}
+  center {37 37}
+  name Transform8
+  label blue
+  xpos -883
+  ypos 56
+ }
+push 0
+push $N7f4d7b0
+ Shuffle {
+  green black
+  blue black
+  alpha black
+  name Shuffle9
+  label red
+  xpos -1066
+  ypos 10
+ }
+ Transform {
+  translate {{chromShift*(defAmt+1) i} 0}
+  center {37 37}
+  name Transform6
+  label red
+  xpos -1066
+  ypos 56
+ }
+push $N7f4d7b0
+ Shuffle {
+  red black
+  blue black
+  name Shuffle10
+  label green
+  xpos -979
+  ypos 12
+ }
+ Transform {
+  center {37 37}
+  name Transform7
+  label "green\n"
+  xpos -979
+  ypos 56
+ }
+ Merge2 {
+  inputs 3+1
+  name Merge3
+  label "\[expr \[value mix] * 100]%"
+  xpos -979
+  ypos 145
+ }
+set N7f4ee00 [stack 0]
+ Dot {
+  name Dot10
+  xpos -951
+  ypos 232
+ }
+set N7f4f130 [stack 0]
+ Dot {
+  name Dot11
+  xpos -1472
+  ypos 232
+ }
+ Dot {
+  name Dot4
+  xpos -1472
+  ypos 1310
+ }
+push $N7f4ee00
+ Crop {
+  box {{(format.w/2)-(flSize)} {(format.h/2)-(flSize)} {(format.w/2)+(flSize)} {(format.h/2)+(flSize)}}
+  reformat true
+  crop false
+  name Crop1
+  xpos -869
+  ypos 214
+  addUserKnob {20 User}
+  addUserKnob {7 flSize}
+  flSize {{defAmt<.01?.01:defAmt}}
+ }
+ Dot {
+  name Dot9
+  xpos -841
+  ypos 686
+ }
+push $N7f0ab50
+ Dot {
+  name Dot3
+  xpos -528
+  ypos 245
+ }
+ Dot {
+  name Dot1
+  xpos -528
+  ypos 461
+ }
+set N7f50780 [stack 0]
+ Keyer {
+  operation "luminance key"
+  range {{hiThresh i} 1 1 1}
+  name Keyer1
+  xpos -638
+  ypos 458
+ }
+ Premult {
+  name Premult1
+  xpos -638
+  ypos 519
+ }
+ Multiply {
+  channels rgba
+  value {{highInt i}}
+  name Multiply1
+  xpos -638
+  ypos 575
+ }
+push $N7f50780
+ Merge2 {
+  inputs 2
+  operation plus
+  Achannels rgb
+  Bchannels rgb
+  output rgb
+  name Merge2
+  label "\[expr \[value mix] * 100]%"
+  xpos -556
+  ypos 636
+  disable {{1-highlights i}}
+ }
+set N7f9b5e0 [stack 0]
+ Convolve {
+  inputs 2
+  channels rgba
+  name Convolve1
+  xpos -758
+  ypos 892
+ }
+set N7f9d5c0 [stack 0]
+ Dot {
+  name Dot5
+  xpos -730
+  ypos 1030
+ }
+push $N7f9b5e0
+ Blur {
+  channels rgba
+  size {{defAmt i}}
+  name Blur1
+  xpos -556
+  ypos 892
+ }
+ Dissolve {
+  inputs 2
+  channels rgba
+  which {{smoothstep(0,2,defAmt) i}}
+  name Dissolve1
+  label "\[expr \[value which] * 100]%"
+  xpos -556
+  ypos 1144
+ }
+set N7f9df50 [stack 0]
+ Switch {
+  inputs 2
+  which {{viewLens i}}
+  name Switch1
+  xpos -556
+  ypos 1312
+ }
+ Output {
+  name Output1
+  xpos -556
+  ypos 1399
+ }
+push $N7f9d5c0
+ Viewer {
+  frame_range 1-106
+  frame_range_lock true
+  input_process false
+  name Viewer1
+  xpos -386
+  ypos 75
+ }
+push $N7f4f130
+ Dot {
+  name Dot8
+  xpos -1251
+  ypos 688
+ }
+ Reformat {
+  type scale
+  scale 1.5
+  resize none
+  filter Impulse
+  name Reformat6
+  xpos -1279
+  ypos 800
+ }
+ FFT {
+  normalize_input true
+  center_kernel true
+  name FFT1
+  xpos -1279
+  ypos 824
+ }
+push $N7f9b5e0
+ Reformat {
+  type scale
+  format "2880 1620 0 0 2880 1620 1 "
+  scale 3
+  center false
+  flip true
+  flop true
+  filter Impulse
+  name Reformat7
+  xpos -1150
+  ypos 801
+ }
+ Tile {
+  rows 3
+  mirrorRows true
+  columns 3
+  mirrorCols true
+  filter Impulse
+  name Tile5
+  xpos -1150
+  ypos 825
+ }
+ Reformat {
+  type scale
+  format "2880 1620 0 0 2880 1620 1 "
+  scale 0.333333333
+  resize none
+  filter Impulse
+  name Reformat8
+  xpos -1150
+  ypos 849
+ }
+ Reformat {
+  type scale
+  scale 1.5
+  resize none
+  name Reformat2
+  xpos -1150
+  ypos 882
+ }
+ FFT {
+  name FFT2
+  xpos -1150
+  ypos 906
+ }
+ FFTMultiply {
+  inputs 2
+  name FFTMultiply1
+  xpos -1279
+  ypos 969
+ }
+ InvFFT {
+  name InvFFT1
+  xpos -1279
+  ypos 1035
+ }
+ Reformat {
+  type scale
+  format "2880 1620 0 0 2880 1620 1 "
+  scale 0.6666666667
+  resize none
+  filter Impulse
+  name Reformat3
+  xpos -1279
+  ypos 1095
+ }
+push $N7f9df50
+ Dissolve {
+  inputs 2
+  channels rgba
+  which {{smoothstep(50,50.1,defAmt) i}}
+  name Dissolve2
+  label "\[expr \[value which] * 100]%"
+  xpos -743
+  ypos 1227
+ }
+end_group
