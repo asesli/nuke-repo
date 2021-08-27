@@ -1,0 +1,610 @@
+#! X:/apps/Nuke7.0v6/Nuke7.0.exe -nx
+version 7.0 v6
+Gizmo {
+inputs 3
+help "Distorts stuff. Left Right Up Down\n<i>Created By: Alican Sesli</i>"
+tile_color 0xff45ff
+label "<font size='1'> <b>Intensity: </b><I>x</I>\[value Xintensity], <I>y</I>\[value Yintensity]\n<b>Bevel: </b>\[value XYBevel]<b> Blur:</b> \[value Blur]<b>"
+note_font "DejaVu Sans"
+note_font_size 10
+addUserKnob {20 iDistort}
+addUserKnob {41 XYBevel T nihilanth1.XYBevel}
+addUserKnob {26 ""}
+addUserKnob {14 Xintensity R 0 100}
+addUserKnob {14 Yintensity R 0 100}
+Yintensity {0}
+addUserKnob {41 Blur T nihilanth1.Blur}
+addUserKnob {41 Dilate T nihilanth1.Dilate}
+addUserKnob {41 UV l "Show Distortion UVs" T nihilanth1.UV}
+addUserKnob {6 show_mask l "Show Mask overlay" t "Highlights the area affected by mask" -STARTLINE}
+addUserKnob {41 multiply_by l INVISIBLE +INVISIBLE T nihilanth1.multiply_by}
+addUserKnob {6 distortionMatte l "Distortion Matte   : <i><font color=\"#AA1111\">distort.rgba" t "Creates a matte for the area that is influenced by the distortion distort.rgba" +STARTLINE}
+addUserKnob {7 Mix}
+Mix 1
+}
+BackdropNode {
+inputs 0
+name BackdropNode3
+tile_color 0x8e8e3800
+label "show UVs"
+note_font_size 42
+xpos 522
+ypos 789
+bdwidth 221
+bdheight 169
+}
+BackdropNode {
+inputs 0
+name BackdropNode1
+tile_color 0xff0000ff
+label control
+note_font_size 42
+xpos 215
+ypos -797
+bdwidth 150
+bdheight 161
+}
+BackdropNode {
+inputs 0
+name BackdropNode4
+tile_color 0xc6415300
+label +/-X
+note_font_size 42
+xpos 322
+ypos -420
+bdwidth 526
+bdheight 353
+}
+BackdropNode {
+inputs 0
+name BackdropNode5
+tile_color 0x49c65200
+label +/-Y
+note_font_size 42
+xpos 319
+ypos -35
+bdwidth 525
+bdheight 357
+}
+Input {
+inputs 0
+name distortion
+tile_color 0xffaac9ff
+label "distortion\nmatte"
+xpos 532
+ypos -992
+number 1
+}
+AdjBBox {
+numpixels 50
+name AdjBBox1
+xpos 532
+ypos -838
+}
+Shuffle {
+red alpha
+green alpha
+blue alpha
+name Shuffle1
+xpos 532
+ypos -798
+}
+Dilate {
+size {{parent.nihilanth1.Dilate}}
+name Dilate1
+xpos 532
+ypos -759
+}
+Dot {
+name Dot20
+xpos 566
+ypos -663
+}
+Dot {
+name Dot5
+xpos 566
+ypos -467
+}
+set Ndc48b110 [stack 0]
+Dot {
+name Dot23
+xpos 887
+ypos -467
+}
+Dot {
+name Dot19
+xpos 887
+ypos 357
+}
+push $Ndc48b110
+Dot {
+name Dot1
+xpos 566
+ypos -363
+}
+set Ndc48bb60 [stack 0]
+Dot {
+name Dot13
+xpos 456
+ypos -363
+}
+set Ndc48bed0 [stack 0]
+Transform {
+translate {{curve} {-parent.nihilanth1.XYBevel.h}}
+center {1081 453}
+black_outside false
+name Transform4
+tile_color 0xff00ffff
+label "( - ) Y"
+note_font "Bitstream Vera Sans Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold"
+xpos 422
+ypos -2
+}
+Shuffle {
+red black
+green alpha
+blue black
+name Shuffle6
+xpos 422
+ypos 36
+}
+Grade {
+channels {-rgba.red rgba.green -rgba.blue}
+multiply {{parent.nihilanth1.Yintensity.w}}
+black_clamp false
+unpremult rgba.alpha
+name Grade5
+tile_color 0x666666ff
+xpos 422
+ypos 62
+}
+Dot {
+name Dot21
+xpos 456
+ypos 115
+}
+set Ndc48cc90 [stack 0]
+push $Ndc48bb60
+Dot {
+name Dot12
+xpos 667
+ypos -363
+}
+set Ndc48d000 [stack 0]
+Transform {
+translate {{curve} {parent.nihilanth1.XYBevel.h}}
+center {1081 453}
+name Transform3
+tile_color 0xff00ff
+label "( + ) Y"
+note_font "Bitstream Vera Sans Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold"
+xpos 633
+ypos -2
+}
+Shuffle {
+red black
+green alpha
+blue black
+name Shuffle5
+xpos 633
+ypos 36
+}
+Grade {
+channels {-rgba.red rgba.green -rgba.blue}
+multiply {{-parent.nihilanth1.Yintensity.h}}
+black_clamp false
+unpremult rgba.alpha
+name Grade6
+tile_color 0x666666ff
+xpos 633
+ypos 62
+}
+Dot {
+name Dot18
+xpos 667
+ypos 119
+}
+set Ndc48ddc0 [stack 0]
+Merge2 {
+inputs 2
+operation stencil
+name Merge8
+xpos 633
+ypos 156
+}
+Dot {
+name Dot22
+xpos 667
+ypos 255
+}
+push $Ndc48ddc0
+push $Ndc48cc90
+Merge2 {
+inputs 2
+operation stencil
+name Merge7
+xpos 422
+ypos 156
+}
+Dot {
+name Dot25
+xpos 456
+ypos 217
+}
+push $Ndc48bed0
+Dot {
+name Dot7
+xpos 389
+ypos -363
+}
+Transform {
+translate {{-parent.nihilanth1.XYBevel.w} {curve}}
+center {1081 453}
+black_outside false
+name Transform2
+tile_color 0xffffff
+label "( - ) X"
+note_font "Bitstream Vera Sans Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold"
+xpos 355
+ypos -329
+}
+Shuffle {
+red alpha
+green black
+blue black
+name Shuffle3
+xpos 355
+ypos -291
+}
+Grade {
+channels {rgba.red -rgba.green -rgba.blue}
+multiply {{parent.nihilanth1.Xintensity.w}}
+black_clamp false
+unpremult rgba.alpha
+name Grade3
+tile_color 0x666666ff
+xpos 355
+ypos -265
+}
+Dot {
+name Dot2
+xpos 389
+ypos -218
+}
+set Ndc48fcb0 [stack 0]
+push $Ndc48d000
+Dot {
+name Dot6
+xpos 777
+ypos -363
+}
+Transform {
+translate {{parent.nihilanth1.XYBevel.w} {curve}}
+center {1081 453}
+name Transform1
+tile_color 0xff0000ff
+label "( + ) X"
+note_font "Bitstream Vera Sans Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold"
+xpos 743
+ypos -330
+}
+Shuffle {
+red alpha
+green black
+blue black
+name Shuffle4
+xpos 743
+ypos -292
+}
+Grade {
+channels {rgba.red -rgba.green -rgba.blue}
+multiply {{-parent.nihilanth1.Xintensity.h}}
+black_clamp false
+unpremult rgba.alpha
+name Grade4
+tile_color 0x666666ff
+xpos 743
+ypos -266
+}
+Dot {
+name Dot10
+xpos 777
+ypos -217
+}
+set Ndc490de0 [stack 0]
+Merge2 {
+inputs 2
+operation stencil
+name Merge1
+xpos 743
+ypos -173
+}
+Dot {
+name Dot11
+xpos 777
+ypos -97
+}
+push $Ndc490de0
+push $Ndc48fcb0
+Merge2 {
+inputs 2
+operation stencil
+name Merge12
+xpos 355
+ypos -182
+}
+Dot {
+name Dot17
+xpos 389
+ypos -135
+}
+push $Ndc48bb60
+Shuffle {
+red black
+green black
+blue black
+alpha black
+name Shuffle8
+xpos 532
+ypos -279
+}
+Merge2 {
+inputs 2
+operation plus
+Achannels {rgba.red -rgba.green -rgba.blue -rgba.alpha}
+Bchannels {rgba.red -rgba.green -rgba.blue rgba.alpha}
+output {rgba.red -rgba.green -rgba.blue -rgba.alpha}
+name Merge2
+xpos 532
+ypos -145
+}
+Merge2 {
+inputs 2
+operation plus
+Achannels {rgba.red -rgba.green -rgba.blue -rgba.alpha}
+Bchannels {rgba.red -rgba.green -rgba.blue rgba.alpha}
+output {rgba.red -rgba.green -rgba.blue -rgba.alpha}
+name Merge3
+xpos 532
+ypos -106
+}
+Merge2 {
+inputs 2
+operation plus
+Achannels {-rgba.red rgba.green -rgba.blue -rgba.alpha}
+Bchannels {rgba.red rgba.green -rgba.blue -rgba.alpha}
+output {-rgba.red rgba.green -rgba.blue -rgba.alpha}
+name Merge4
+xpos 532
+ypos 207
+}
+Merge2 {
+inputs 2
+operation plus
+Achannels {-rgba.red rgba.green -rgba.blue -rgba.alpha}
+Bchannels {rgba.red rgba.green -rgba.blue -rgba.alpha}
+output {-rgba.red rgba.green -rgba.blue -rgba.alpha}
+name Merge5
+xpos 532
+ypos 245
+}
+Merge2 {
+inputs 2
+operation mask
+name In
+xpos 532
+ypos 353
+}
+Blur {
+size {{parent.nihilanth1.Blur}}
+name Blur4
+label "\[value size]"
+xpos 532
+ypos 393
+}
+Crop {
+box {0 0 {input0.width i} {input0.height i}}
+name Crop1
+xpos 532
+ypos 485
+}
+Shuffle {
+blue black
+alpha black
+name Shuffle7
+label "red/green only"
+xpos 532
+ypos 664
+}
+set Ndc493a90 [stack 0]
+Dot {
+name Dot4
+xpos 370
+ypos 674
+}
+set Ndc493e00 [stack 0]
+Dot {
+name Dot3
+xpos 370
+ypos 1087
+}
+Expression {
+expr0 abs(r)
+expr1 abs(g)
+expr2 abs(b)
+name Expression1
+xpos 336
+ypos 1114
+}
+set Ndc4944e0 [stack 0]
+Shuffle {
+green red
+blue red
+alpha red
+name Shuffle9
+xpos 288
+ypos 1181
+}
+push $Ndc4944e0
+Shuffle {
+red green
+blue green
+alpha green
+name Shuffle10
+xpos 383
+ypos 1179
+}
+Merge2 {
+inputs 2
+operation screen
+name Merge6
+xpos 346
+ypos 1227
+}
+Dot {
+name Dot16
+xpos 380
+ypos 1295
+}
+Input {
+inputs 0
+name mask
+xpos 150
+ypos 551
+number 2
+}
+set Ndc495610 [stack 0]
+Dot {
+name Dot8
+xpos 184
+ypos 1122
+}
+push $Ndc495610
+push $Ndc493e00
+Multiply {
+value {{parent.Mix}}
+name Multiply1
+xpos 224
+ypos 664
+}
+Merge2 {
+inputs 2
+operation mask
+name Merge10
+xpos 94
+ypos 670
+disable {{"!\[exists parent.input2]"}}
+}
+set Ndc496060 [stack 0]
+Input {
+inputs 0
+name Input
+tile_color 0xff5594ff
+label plate
+xpos -16
+ypos -981
+}
+ShuffleCopy {
+inputs 2
+alpha alpha2
+black red
+white green
+red2 black
+green2 black
+out2 forward
+name ShuffleCopy2
+label "red     U\ngreen V"
+xpos -16
+ypos 658
+}
+IDistort {
+uv forward
+uv_scale {-10 -10}
+name IDistort3
+tile_color 0xff0000ff
+xpos -22
+ypos 780
+}
+Constant {
+inputs 0
+channels {rgba.red rgba.green rgba.blue -rgba.alpha}
+color 0.5
+name Constant6
+xpos 623
+ypos 812
+}
+push $Ndc493a90
+Merge2 {
+inputs 2
+operation under
+name Merge9
+xpos 532
+ypos 928
+}
+Switch {
+inputs 2
+which 1
+name Switch1
+label "UV switch"
+xpos -16
+ypos 922
+disable {{parent.nihilanth1.UV}}
+}
+Grade {
+inputs 1+1
+channels {rgba.red -rgba.green -rgba.blue}
+black 0.2
+name show_mask
+xpos -16
+ypos 1112
+disable {{"(!\[exists parent.input2]) ?  1 : (!parent.show_mask)"}}
+}
+add_layer {distort distort.red distort.green distort.blue distort.alpha}
+ShuffleCopy {
+inputs 2
+red red
+green green
+blue blue
+out distort
+name ShuffleCopy1
+xpos -16
+ypos 1291
+disable {{!parent.distortionMatte}}
+}
+Output {
+name Output2
+xpos -16
+ypos 1461
+}
+push $Ndc496060
+push 0
+Viewer {
+inputs 2
+input_number 1
+input_process false
+name Viewer1
+xpos 730
+ypos -10
+}
+NoOp {
+inputs 0
+name nihilanth1
+tile_color 0xff
+note_font "DejaVu Sans Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold Bold"
+note_font_size 15
+xpos 251
+ypos -710
+addUserKnob {20 User}
+addUserKnob {14 XYBevel t "Controls the amount of bevel.\nThis will control how far from the matte distortion will sample" R 0 100}
+XYBevel 10
+addUserKnob {14 Xintensity R 0 100}
+Xintensity {{parent.Xintensity} {parent.Xintensity}}
+addUserKnob {14 Yintensity R 0 100}
+Yintensity {{parent.Yintensity} {parent.Yintensity}}
+addUserKnob {14 Blur t "Softens the effect of distortion edge" R 0 100}
+Blur 50
+addUserKnob {14 Dilate t "erodes the matte" R 0 100}
+addUserKnob {6 UV l "Show UVs" t "Show UVs \nRed channel: +/-X \nGreen channel: +/-Y" +STARTLINE}
+addUserKnob {6 multiply_by l "Multiply by" t "multiplies the effect by 'multiply_by' input" +STARTLINE}
+}
+end_group
